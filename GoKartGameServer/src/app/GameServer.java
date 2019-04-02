@@ -6,11 +6,21 @@ import java.util.Scanner;
 import java.util.concurrent.Executors;
 
 public class GameServer implements Runnable {
-    public static void main(String[] args) throws Exception {
 
+    Socket server = null;
+
+    public GameServer(Socket localhost)
+    {
+       this.server = localhost;
+    }
+    
+    
+    @Override
+    public void run() {
+        
         // client socket
-        ServerSocket service = null;
-        Socket server = null;
+        //ServerSocket service = null;
+        //Socket server = null;
 
         // input stream and string to store message from client
         BufferedReader is;
@@ -19,35 +29,22 @@ public class GameServer implements Runnable {
         // outpu stream to client
         DataOutputStream os;
 
-        try {
-            service = new ServerSocket(5000);
-            System.out.println("Server is running...");
-        } catch (IOException e) {
-            System.out.println(e);
-        }
-
         // create a server socket to listen and accept connections
         try {
-            server = service.accept();
-            System.out.println("Connection established");
-            is = new BufferedReader(new InputStreamReader(server.getInputStream()));
-            os = new DataOutputStream(server.getOutputStream());
-            if ((line = is.readLine()) != null) {
-                os.writeBytes("Hello client\n");
+            if (server != null) {
+                System.out.println("Connection established");
+                is = new BufferedReader(new InputStreamReader(server.getInputStream()));
+                os = new DataOutputStream(server.getOutputStream());
+                if ((line = is.readLine()) != null) {
+                    os.writeBytes("Hello client\n");
+                }
+                // Comment out/remove the stream and socket closes if server is to remain live.
+                // os.close();
+                // is.close();
+                // server.close();                    
             }
-            // Comment out/remove the stream and socket closes if server is to remain live.
-            os.close();
-            is.close();
-            server.close();
-
         } catch (IOException e) {
             System.out.println(e);
-        }
-    }
-
-
-    @Override
-    public void run() {
-        
+        }        
     }
 }
