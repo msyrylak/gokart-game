@@ -5,7 +5,7 @@ import java.net.*;
 import java.util.Scanner;
 import java.util.concurrent.Executors;
 
-public class GameServer {
+public class GameServer implements Runnable {
     public static void main(String[] args) throws Exception {
 
         // client socket
@@ -43,5 +43,11 @@ public class GameServer {
         } catch (IOException e) {
             System.out.println(e);
         }
+    }
+
+
+    @Override
+    public void run() {
+        
     }
 }
