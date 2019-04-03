@@ -28,9 +28,6 @@ public class ClientPanel extends JPanel implements KeyListener {
     // collision boxes
     Rectangle grass;
     Rectangle outerEdge;
-    Rectangle outerEdge2;
-    Rectangle outerEdge3;
-    Rectangle outerEdge4;
 
     public ClientPanel() {
 
@@ -81,7 +78,7 @@ public class ClientPanel extends JPanel implements KeyListener {
 
         carsWhite[indexWhite].paintIcon(this, g, (int) whiteKart.carPosX, (int) whiteKart.carPosY);
         carsBlack[indexBlack].paintIcon(this, g, (int) blackKart.carPosX, (int) blackKart.carPosY);
-        
+
         // add collision boxes to the karts
         whiteKart.AddCollisionBox(carsWhite[indexWhite].getIconWidth(), carsWhite[indexWhite].getIconHeight());
         blackKart.AddCollisionBox(carsWhite[indexWhite].getIconWidth(), carsWhite[indexWhite].getIconHeight());
@@ -152,34 +149,29 @@ public class ClientPanel extends JPanel implements KeyListener {
     }
 
     private void myKeyEvent(KeyEvent e, String text) {
- 
+
         // simple collision detection
-        if (!outerEdge.contains(whiteKart.aabb))
-        {
+        if (!outerEdge.contains(whiteKart.aabb)) {
             whiteKart.speed = 0;
-        }
-        else if (whiteKart.aabb.intersects(grass)) /*|| whiteKart.aabb.intersects(outerEdge.)*/ {
+        } else if (whiteKart.aabb.intersects(grass)) /* || whiteKart.aabb.intersects(outerEdge.) */ {
 
             whiteKart.speed = 0;
 
         }
-        if (!outerEdge.contains(blackKart.aabb))
-        {
+        if (!outerEdge.contains(blackKart.aabb)) {
             blackKart.speed = 0;
-        }
-        else if (blackKart.aabb.intersects(grass)) {
+        } else if (blackKart.aabb.intersects(grass)) {
 
             blackKart.speed = 0;
 
-        }
-         else if (blackKart.aabb.intersects(whiteKart.aabb) || whiteKart.aabb.intersects(blackKart.aabb)) {
-            
+        } else if (blackKart.aabb.intersects(whiteKart.aabb) || whiteKart.aabb.intersects(blackKart.aabb)) {
+
             // Warning icon made by Twitter from Flaticon <www.flaticon.com>
             ImageIcon icon = new ImageIcon(this.getClass().getResource("Pics/warning.png"));
-            
+
             // start the game again or close the program
             String[] options = { "Start again", "Close the program" };
-            
+
             int x = JOptionPane.showOptionDialog(this, "GoKarts crashed!", "Gameover", JOptionPane.DEFAULT_OPTION,
                     JOptionPane.PLAIN_MESSAGE, icon, options, options[0]);
             if (x == 0) {
@@ -194,7 +186,7 @@ public class ClientPanel extends JPanel implements KeyListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            
+
             repaint();
         }
 
@@ -222,44 +214,85 @@ public class ClientPanel extends JPanel implements KeyListener {
     }
 
     // socket connection
-    public void socketProcessing() //throws UnknownHostException, IOException
-    { 
+    public void socketProcessing() // throws UnknownHostException, IOException
+    {
         Socket clientSocket = null;
 
-        DataOutputStream os = null;
+        //DataOutputStream os = null;
         String request;
-
-        BufferedReader is = null;
+        Scanner scn = new Scanner(System.in);
+        //DataInputStream is = null;
         String responseLine;
 
         try {
             clientSocket = new Socket("localhost", 5000);
-            os = new DataOutputStream(clientSocket.getOutputStream());
-            is = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            DataOutputStream  os = new DataOutputStream(clientSocket.getOutputStream());
+            BufferedReader is = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+
+            if (clientSocket != null && os != null && is != null) {
+                try {
+                    request = "Hello server! \n";
+                    os.writeBytes(request);
+                    System.out.println("CLIENT: " + request);
+    
+                    if ((responseLine = is.readLine()) != null) {
+                        System.out.println("SERVER: " + responseLine);
+                    }
+                    // sendMessage thread
+                    Thread sendMessage = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            while (true) {
+                                // read the message to deliver.
+                                String msg = scn.nextLine();
+    
+                                try {
+                                    // write on the output stream
+                                    os.writeUTF(msg);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    });
+    
+                    // readMessage thread
+                    Thread readMessage = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+    
+                            while (true) {
+                                try {
+                                    // read the message sent to this client
+                                    String msg = is.readLine();
+                                    System.out.println(msg);
+                                } catch (IOException e) {
+    
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    });
+    
+                    sendMessage.start();
+                    readMessage.start();
+                    // os.close();
+                    // is.close();
+                    // clientSocket.close();
+                } catch (UnknownHostException e) {
+                    System.err.println("Trying to connect to unknown host: " + e);
+                } catch (IOException e) {
+                    System.err.println("IOException:  " + e);
+                }
+            }
+
         } catch (UnknownHostException e) {
             System.out.println("Don't know about host: hostname");
         } catch (IOException e) {
             System.err.println("Couldn't get I/O for the connection to: hostname");
         }
 
-        if (clientSocket != null && os != null && is != null) {
-            try {
-                request = "Hello server! \n";
-                os.writeBytes(request);
-                System.out.println("CLIENT: " + request);
 
-                if ((responseLine = is.readLine()) != null) {
-                    System.out.println("SERVER: " + responseLine);
-                }
-                os.close();
-                is.close();
-                clientSocket.close();
-            } catch (UnknownHostException e) {
-                System.err.println("Trying to connect to unknown host: " + e);
-            } catch (IOException e) {
-                System.err.println("IOException:  " + e);
-            }
-        }
     }
 
 }

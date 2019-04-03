@@ -3,48 +3,32 @@ package ServerApp;
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-public class GameServer implements Runnable {
+public class GameServer  {
 
-    Socket server = null;
+    ClientThread[] players;
+    ServerSocket server;
+    ClientThread opponent;
+    ClientThread thisPlayer;
+    private final static String whiteKart = "WHITE";
+    private final static String blackKart = "BLACK";
+    private Condition otherPlayerConnected;
+    private Lock gameLock;
+    private ExecutorService runGame;
 
-    public GameServer(Socket localhost)
+    public GameServer()
     {
-       this.server = localhost;
+        runGame = Executors.newFixedThreadPool(2);
+        gameLock = new ReentrantLock();
+
+        otherPlayerConnected = gameLock.newCondition();
+
+        players = new ClientThread[2];
     }
-    
-    
-    @Override
-    public void run() {
-        
-        // client socket
-        //ServerSocket service = null;
-        //Socket server = null;
 
-        // input stream and string to store message from client
-        BufferedReader is;
-        String line;
 
-        // outpu stream to client
-        DataOutputStream os;
-
-        // create a server socket to listen and accept connections
-        try {
-            if (server != null) {
-                System.out.println("Connection established" + server);
-                is = new BufferedReader(new InputStreamReader(server.getInputStream()));
-                os = new DataOutputStream(server.getOutputStream());
-                if ((line = is.readLine()) != null) {
-                    os.writeBytes("Hello client\n");
-                }
-                // Comment out/remove the stream and socket closes if server is to remain live.
-                // os.close();
-                // is.close();
-                // server.close();                    
-            }
-        } catch (IOException e) {
-            System.out.println(e);
-        }        
-    }
 }
