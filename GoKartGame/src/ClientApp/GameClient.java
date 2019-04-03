@@ -1,4 +1,4 @@
-package app;
+package ClientApp;
 
 public class GameClient {
     public static void main(String[] args) throws Exception {

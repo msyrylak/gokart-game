@@ -1,4 +1,4 @@
-package app;
+package ServerApp;
 
 import java.io.*;
 import java.net.*;
@@ -16,12 +16,12 @@ public class Server
             // create game server object and pass the connection
             GameServer firstServer = new GameServer(firstSocket);
             Thread t1 = new Thread(firstServer);
-            System.out.println("First client: "+ firstSocket.getInetAddress());
+            //System.out.println("First client: "+ firstSocket.getInetAddress());
             t1.start();
             Socket secondSocket = localhost.accept();
             GameServer secondServer = new GameServer(secondSocket);
             Thread t2 = new Thread(secondServer);
-            System.out.println("Second client: "+ secondSocket.getInetAddress());
+            //System.out.println("Second client: "+ secondSocket.getInetAddress());
             t2.start();
 
         } catch (Exception e) {

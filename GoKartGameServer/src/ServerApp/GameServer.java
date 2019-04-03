@@ -1,4 +1,4 @@
-package app;
+package ServerApp;
 
 import java.io.*;
 import java.net.*;
@@ -32,7 +32,7 @@ public class GameServer implements Runnable {
         // create a server socket to listen and accept connections
         try {
             if (server != null) {
-                System.out.println("Connection established");
+                System.out.println("Connection established" + server);
                 is = new BufferedReader(new InputStreamReader(server.getInputStream()));
                 os = new DataOutputStream(server.getOutputStream());
                 if ((line = is.readLine()) != null) {
