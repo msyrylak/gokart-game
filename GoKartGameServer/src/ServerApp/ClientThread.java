@@ -1,5 +1,6 @@
 package ServerApp;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -15,7 +16,7 @@ public class ClientThread implements Runnable {
     ClientThread opponent;
     Socket socket;
     Scanner input;
-    PrintWriter output;
+    DataOutputStream output;
     boolean isConnected;
 
     public ClientThread(Socket socket, String kart) {
@@ -29,27 +30,31 @@ public class ClientThread implements Runnable {
         
         String received;
         System.out.println("Connection established" + socket);
+        try {
+            input = new Scanner(socket.getInputStream());
+            output = new DataOutputStream(socket.getOutputStream());
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
 
         while(true)
         {
             try {
-                input = new Scanner(socket.getInputStream());
-                output = new PrintWriter(socket.getOutputStream(), true);
-                output.println("WELCOME, YOUR KART IS: " + kart);
                 //received = input.nextLine();
                 //output.println(received);
                 if(opponent != null)
                 {
                     received = input.nextLine();
                     System.out.println(received);
-                    opponent.output.println(received);
+                    opponent.output.writeBytes(received);
+                    opponent.output.flush();
                 }
                 else 
                 {
-                    output.println("Waiting for opponent...");
+                    //output.println("Waiting for opponent...");
                 }
     
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             } 
           

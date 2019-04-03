@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Debug (Launch) - Integrated Terminal",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "mainClass": ""
+        },
+        {
+            "type": "java",
             "name": "Debug (Launch) - Current File",
             "request": "launch",
             "mainClass": "${file}"

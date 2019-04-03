@@ -1,8 +1,7 @@
-package ClientApp;
+package ServerApp;
 
 import java.awt.*;
 import java.io.Serializable;
-
 import javax.swing.*;
 
 

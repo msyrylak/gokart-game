@@ -227,17 +227,17 @@ public class ClientPanel extends JPanel implements KeyListener {
         try {
             clientSocket = new Socket("localhost", 5000);
             DataOutputStream  os = new DataOutputStream(clientSocket.getOutputStream());
-            BufferedReader is = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            DataInputStream is = new DataInputStream(clientSocket.getInputStream());
 
             if (clientSocket != null && os != null && is != null) {
                 try {
-                    request = "Hello server! \n";
-                    os.writeBytes(request);
-                    System.out.println("CLIENT: " + request);
+                    // request = "Hello server! \n";
+                    // os.writeBytes(request);
+                    // System.out.println("CLIENT: " + request);
     
-                    if ((responseLine = is.readLine()) != null) {
-                        System.out.println("SERVER: " + responseLine);
-                    }
+                    // if ((responseLine = is.readUTF()) != null) {
+                    //     System.out.println("SERVER: " + responseLine);
+                    // }
                     // sendMessage thread
                     Thread sendMessage = new Thread(new Runnable() {
                         @Override
@@ -247,15 +247,19 @@ public class ClientPanel extends JPanel implements KeyListener {
                                 String msg = scn.nextLine();
     
                                 try {
-                                    // write on the output stream
-                                    os.writeUTF(msg);
+                                    // write to the output stream
+                                    msg += "\n";
+                                    os.writeBytes(msg);
+                                    os.flush();
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
                             }
                         }
                     });
-    
+
+                    byte[] bytes = new byte[8];
+                    
                     // readMessage thread
                     Thread readMessage = new Thread(new Runnable() {
                         @Override
@@ -264,8 +268,8 @@ public class ClientPanel extends JPanel implements KeyListener {
                             while (true) {
                                 try {
                                     // read the message sent to this client
-                                    String msg = is.readLine();
-                                    System.out.println(msg);
+                                    is.readFully(bytes);
+                                    System.out.println("test");
                                 } catch (IOException e) {
     
                                     e.printStackTrace();
@@ -279,11 +283,9 @@ public class ClientPanel extends JPanel implements KeyListener {
                     // os.close();
                     // is.close();
                     // clientSocket.close();
-                } catch (UnknownHostException e) {
+                } catch (Exception e) {
                     System.err.println("Trying to connect to unknown host: " + e);
-                } catch (IOException e) {
-                    System.err.println("IOException:  " + e);
-                }
+                } 
             }
 
         } catch (UnknownHostException e) {
