@@ -2,9 +2,10 @@ package ClientApp;
 
 import java.awt.*;
 import java.io.Serializable;
-
 import javax.swing.*;
 
+
+// todo: add getters and setters
 
 public class GoKart implements Serializable {
 

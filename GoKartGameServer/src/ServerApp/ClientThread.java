@@ -2,14 +2,8 @@ package ServerApp;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
-
-
-
-
-
 
 public class ClientThread implements Runnable {
     String kart;
@@ -64,13 +58,8 @@ public class ClientThread implements Runnable {
         //     this.output.close();
             
         // } catch (IOException e) {
-        //     //TODO: handle exception
+        //     handle exception
         // } 
-
-    }
-
-    public void sendInfo()
-    {
 
     }
 }

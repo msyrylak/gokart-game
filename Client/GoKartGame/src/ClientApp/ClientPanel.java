@@ -5,11 +5,11 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-// socket connection
-import java.io.*;
-import java.net.*;
-import java.util.Scanner;
-import java.util.concurrent.Executors;
+// // socket connection
+// import java.io.*;
+// import java.net.*;
+// import java.util.Scanner;
+// import java.util.concurrent.Executors;
 
 public class ClientPanel extends JPanel implements KeyListener {
 
@@ -29,9 +29,13 @@ public class ClientPanel extends JPanel implements KeyListener {
     Rectangle grass;
     Rectangle outerEdge;
 
+    // server connection
+    ServerConnection serverConnection = null;
+
     public ClientPanel() {
 
-        this.socketProcessing();
+        serverConnection = new ServerConnection();
+        serverConnection.socketProcessing();
         this.Init();
         this.setFocusable(true);
         this.requestFocusInWindow();
@@ -81,7 +85,7 @@ public class ClientPanel extends JPanel implements KeyListener {
 
         // add collision boxes to the karts
         whiteKart.AddCollisionBox(carsWhite[indexWhite].getIconWidth(), carsWhite[indexWhite].getIconHeight());
-        blackKart.AddCollisionBox(carsWhite[indexWhite].getIconWidth(), carsWhite[indexWhite].getIconHeight());
+        blackKart.AddCollisionBox(carsWhite[indexBlack].getIconWidth(), carsWhite[indexBlack].getIconHeight());
         repaint();
 
     }
@@ -150,6 +154,7 @@ public class ClientPanel extends JPanel implements KeyListener {
 
     private void myKeyEvent(KeyEvent e, String text) {
 
+        // move to action performed?
         // simple collision detection
         if (!outerEdge.contains(whiteKart.aabb)) {
             whiteKart.speed = 0;
@@ -186,13 +191,13 @@ public class ClientPanel extends JPanel implements KeyListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-
+            serverConnection.sendInformation(blackKart.carPosX, blackKart.carPosY, blackKart.speed, indexBlack);
             repaint();
         }
 
     }
 
-    // TODO: add that to utils?
+    // add that to utils?
     private class Vector2 {
         public float x;
         public float y;
@@ -213,88 +218,5 @@ public class ClientPanel extends JPanel implements KeyListener {
 
     }
 
-    // socket connection
-    public void socketProcessing() // throws UnknownHostException, IOException
-    {
-        Socket clientSocket = null;
-
-        //DataOutputStream os = null;
-        String request;
-        Scanner scn = new Scanner(System.in);
-        //DataInputStream is = null;
-        String responseLine;
-
-        try {
-            clientSocket = new Socket("localhost", 5000);
-            DataOutputStream  os = new DataOutputStream(clientSocket.getOutputStream());
-            DataInputStream is = new DataInputStream(clientSocket.getInputStream());
-
-            if (clientSocket != null && os != null && is != null) {
-                try {
-                    // request = "Hello server! \n";
-                    // os.writeBytes(request);
-                    // System.out.println("CLIENT: " + request);
-    
-                    // if ((responseLine = is.readUTF()) != null) {
-                    //     System.out.println("SERVER: " + responseLine);
-                    // }
-                    // sendMessage thread
-                    Thread sendMessage = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            while (true) {
-                                // read the message to deliver.
-                                String msg = scn.nextLine();
-    
-                                try {
-                                    // write to the output stream
-                                    msg += "\n";
-                                    os.writeBytes(msg);
-                                    os.flush();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    });
-
-                    byte[] bytes = new byte[8];
-                    
-                    // readMessage thread
-                    Thread readMessage = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-    
-                            while (true) {
-                                try {
-                                    // read the message sent to this client
-                                    is.readFully(bytes);
-                                    System.out.println("test");
-                                } catch (IOException e) {
-    
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    });
-    
-                    sendMessage.start();
-                    readMessage.start();
-                    // os.close();
-                    // is.close();
-                    // clientSocket.close();
-                } catch (Exception e) {
-                    System.err.println("Trying to connect to unknown host: " + e);
-                } 
-            }
-
-        } catch (UnknownHostException e) {
-            System.out.println("Don't know about host: hostname");
-        } catch (IOException e) {
-            System.err.println("Couldn't get I/O for the connection to: hostname");
-        }
-
-
-    }
 
 }
