@@ -1,7 +1,6 @@
 package ServerApp;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -11,6 +10,8 @@ public class ClientThread implements Runnable {
     Socket socket;
     Scanner input;
     DataOutputStream output;
+    ObjectInputStream objectInput;
+    ObjectOutputStream objectOutput;
     boolean isConnected;
 
     public ClientThread(Socket socket, String kart) {
@@ -27,6 +28,9 @@ public class ClientThread implements Runnable {
         try {
             input = new Scanner(socket.getInputStream());
             output = new DataOutputStream(socket.getOutputStream());
+            objectInput = new ObjectInputStream(socket.getInputStream());
+            objectOutput = new ObjectOutputStream(socket.getOutputStream());
+
         } catch (IOException e1) {
             e1.printStackTrace();
         }
@@ -38,10 +42,12 @@ public class ClientThread implements Runnable {
                 //output.println(received);
                 if(opponent != null)
                 {
-                    received = input.nextLine();
-                    System.out.println(received);
-                    opponent.output.writeBytes(received);
-                    opponent.output.flush();
+                   // received = input.nextLine();
+                    Packet packet = (Packet) objectInput.readObject();
+                    System.out.println("received");
+                    //opponent.output.writeBytes(received);
+                    opponent.objectOutput.writeObject(packet);
+                    //opponent.output.flush();
                 }
                 else 
                 {
@@ -53,13 +59,23 @@ public class ClientThread implements Runnable {
             } 
           
         }
-        // try {
-        //     this.input.close();
-        //     this.output.close();
-            
-        // } catch (IOException e) {
-        //     handle exception
-        // } 
-
     }
+
+    public class Packet implements Serializable {
+            
+        private static final long serialVersionUID = -895922647447501206L;
+        float carX;
+        float carY;
+        float speed;
+        int index;
+
+        public Packet(float carX, float carY, float speed, int index)
+        {
+            this.carX = carX;
+            this.carY = carY;
+            this.speed = speed;
+            this.index = index;
+        }
+    }
+
 }

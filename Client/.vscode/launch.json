@@ -6,23 +6,16 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Debug (Launch) - Integrated Terminal",
-            "request": "launch",
-            "console": "integratedTerminal",
-            "mainClass": ""
-        },
-        {
-            "type": "java",
             "name": "Debug (Launch) - Current File",
             "request": "launch",
             "mainClass": "${file}"
         },
         {
             "type": "java",
-            "name": "Debug (Launch)-GameClient<GoKartGame>",
+            "name": "Debug (Launch)-App<Part2>",
             "request": "launch",
-            "mainClass": "ClientApp.GameClient",
-            "projectName": "GoKartGame"
+            "mainClass": "Part2.App",
+            "projectName": "Part2"
         }
     ]
 }
