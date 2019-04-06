@@ -19,10 +19,10 @@
         },
         {
             "type": "java",
-            "name": "Debug (Launch)-GameServer<GoKartGameServer>",
+            "name": "Debug (Launch)-App<GameServer>",
             "request": "launch",
-            "mainClass": "app.GameServer",
-            "projectName": "GoKartGameServer"
+            "mainClass": "Part3.App",
+            "projectName": "GameServer"
         }
     ]
 }

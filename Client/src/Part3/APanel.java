@@ -1,4 +1,4 @@
-package Part2;
+package Part3;
 
 import java.awt.event.*;
 import java.awt.*;
@@ -14,7 +14,7 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
     private Timer timer;
     GoKart whiteKart = new GoKart(FIRST_CAR, startingIndex, 425, 500);
     GoKart blackKart = new GoKart(SECOND_CAR, startingIndex, 425, 550);
-
+    Client client;
     // aabb for environment
     Rectangle grass;
     Rectangle outerEdge;
@@ -27,6 +27,7 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
         this.addKeyListener(this);
         timer = new Timer(REFRESH_RATE, this);
         timer.start();
+        client = new Client();
     }
 
     public void paintComponent(Graphics g) {
@@ -52,6 +53,9 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
         whiteKart.AddCollisionBox(50, 50);
         blackKart.AddCollisionBox(50, 50);
 
+        client.sendInt((int) whiteKart.posX);
+        blackKart.posX = client.readInt();
+
         whiteKart.getCurrentImage().paintIcon(this, g, (int) whiteKart.posX, (int) whiteKart.posY);
         blackKart.getCurrentImage().paintIcon(this, g, (int) blackKart.posX, (int) blackKart.posY);
     }
@@ -59,6 +63,7 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         repaint();
+
     }
 
     @Override
