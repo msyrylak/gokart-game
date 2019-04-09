@@ -12,8 +12,8 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
     private final int startingIndex = 0;
     private final int REFRESH_RATE = 50;
     private Timer timer;
-    GoKart whiteKart = new GoKart(FIRST_CAR, startingIndex, 425, 500);
-    GoKart blackKart = new GoKart(SECOND_CAR, startingIndex, 425, 550);
+    GoKart playerKart = null; // = new GoKart(FIRST_CAR, startingIndex, 425, 500);
+    GoKart opponentKart = null; // = new GoKart(SECOND_CAR, startingIndex, 425, 550);
     Client client;
     // aabb for environment
     Rectangle grass;
@@ -28,6 +28,15 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
         timer = new Timer(REFRESH_RATE, this);
         timer.start();
         client = new Client();
+        
+        if (client.goKartColour.equals(FIRST_CAR)) {
+            playerKart = new GoKart(FIRST_CAR, startingIndex, 425, 500);
+            opponentKart = new GoKart(SECOND_CAR, startingIndex, 425, 550);
+        } else {
+            playerKart = new GoKart(SECOND_CAR, startingIndex, 425, 500);
+            opponentKart = new GoKart(FIRST_CAR, startingIndex, 425, 550);
+        }
+
     }
 
     public void paintComponent(Graphics g) {
@@ -50,20 +59,28 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
 
         grass = new Rectangle(150, 200, 550, 300);
         outerEdge = new Rectangle(50, 100, 750, 500);
-        whiteKart.AddCollisionBox(50, 50);
-        blackKart.AddCollisionBox(50, 50);
+        //whiteKart.AddCollisionBox(50, 50);
+        //blackKart.AddCollisionBox(50, 50);
 
-        client.sendInt((int) whiteKart.posX);
-        blackKart.posX = client.readInt();
+        client.sendColour(playerKart.colour);
+        client.sendFloat(playerKart.posX);
+        client.sendFloat(playerKart.posY);
+        client.sendInt(playerKart.index);
 
-        whiteKart.getCurrentImage().paintIcon(this, g, (int) whiteKart.posX, (int) whiteKart.posY);
-        blackKart.getCurrentImage().paintIcon(this, g, (int) blackKart.posX, (int) blackKart.posY);
+        opponentKart.colour = client.receiveColour();
+        opponentKart.posX = client.receiveFloat();
+        opponentKart.posY = client.receiveFloat();
+        opponentKart.index = client.receiveInt();
+
+
+        playerKart.getCurrentImage().paintIcon(this, g, (int) playerKart.posX, (int) playerKart.posY);
+        opponentKart.getCurrentImage().paintIcon(this, g, (int) opponentKart.posX, (int) opponentKart.posY);
+
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         repaint();
-
     }
 
     @Override
@@ -76,49 +93,49 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
         int key = e.getKeyCode();
 
         switch (key) {
-        case KeyEvent.VK_D:
-            if (blackKart.index == 0) {
-                blackKart.index = TOTAL_INDEX;
-            } else if (blackKart.index > 0) {
-                blackKart.index--;
-            }
-            break;
-        case KeyEvent.VK_A:
-            if (blackKart.index >= TOTAL_INDEX) {
-                blackKart.index = 0;
-            } else {
-                blackKart.index++;
-            }
-            break;
+        // case KeyEvent.VK_D:
+        //     if (opponentKart.index == 0) {
+        //         opponentKart.index = TOTAL_INDEX;
+        //     } else if (opponentKart.index > 0) {
+        //         opponentKart.index--;
+        //     }
+        //     break;
+        // case KeyEvent.VK_A:
+        //     if (opponentKart.index >= TOTAL_INDEX) {
+        //         opponentKart.index = 0;
+        //     } else {
+        //         opponentKart.index++;
+        //     }
+        //     break;
 
-        case KeyEvent.VK_W:
-            blackKart.moveForward();
-            break;
+        // case KeyEvent.VK_W:
+        //     opponentKart.moveForward();
+        //     break;
 
-        case KeyEvent.VK_S:
-            blackKart.moveBackwards();
-            break;
+        // case KeyEvent.VK_S:
+        //     opponentKart.moveBackwards();
+        //     break;
 
         case KeyEvent.VK_RIGHT:
-            if (whiteKart.index == 0) {
-                whiteKart.index = TOTAL_INDEX;
-            } else if (whiteKart.index > 0) {
-                whiteKart.index--;
+            if (playerKart.index == 0) {
+                playerKart.index = TOTAL_INDEX;
+            } else if (playerKart.index > 0) {
+                playerKart.index--;
             }
             break;
         case KeyEvent.VK_LEFT:
-            if (whiteKart.index >= TOTAL_INDEX) {
-                whiteKart.index = 0;
+            if (playerKart.index >= TOTAL_INDEX) {
+                playerKart.index = 0;
             } else {
-                whiteKart.index++;
+                playerKart.index++;
             }
             break;
         case KeyEvent.VK_UP:
-            whiteKart.moveForward();
+            playerKart.moveForward();
             break;
 
         case KeyEvent.VK_DOWN:
-            whiteKart.moveBackwards();
+            playerKart.moveBackwards();
             break;
 
         default:
@@ -126,27 +143,27 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
         }
 
         // simple collision detection
-        if (!outerEdge.contains(whiteKart.aabb))
+        if (!outerEdge.contains(playerKart.aabb))
         {
-        whiteKart.setSpeed(0);
+        playerKart.setSpeed(0);
         }
-        else if (whiteKart.aabb.intersects(grass)) /*||
+        else if (playerKart.aabb.intersects(grass)) /*||
         whiteKart.aabb.intersects(outerEdge.)*/ {
 
-        whiteKart.setSpeed(0);
+        playerKart.setSpeed(0);
 
         }
-        if (!outerEdge.contains(blackKart.aabb))
+        if (!outerEdge.contains(opponentKart.aabb))
         {
-        blackKart.setSpeed(0);
+        opponentKart.setSpeed(0);
         }
-        else if (blackKart.aabb.intersects(grass)) {
+        else if (opponentKart.aabb.intersects(grass)) {
 
-        blackKart.setSpeed(0);
+        opponentKart.setSpeed(0);
 
         }
-        else if (blackKart.aabb.intersects(whiteKart.aabb) ||
-        whiteKart.aabb.intersects(blackKart.aabb)) {
+        else if (opponentKart.aabb.intersects(playerKart.aabb) ||
+        playerKart.aabb.intersects(opponentKart.aabb)) {
 
         // Warning icon made by Twitter from Flaticon <www.flaticon.com>
         ImageIcon icon = new
@@ -174,16 +191,16 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
 
     public void reset()
     {
-        whiteKart.setSpeed(0);
-        blackKart.setSpeed(0);
+        playerKart.setSpeed(0);
+        opponentKart.setSpeed(0);
 
-        whiteKart.index = startingIndex;
-        blackKart.index = startingIndex;
+        playerKart.index = startingIndex;
+        opponentKart.index = startingIndex;
 
-        whiteKart.posX = 425;
-        whiteKart.posY = 500;
+        playerKart.posX = 425;
+        playerKart.posY = 500;
 
-        blackKart.posX = 425;
-        blackKart.posY = 550;
+        opponentKart.posX = 425;
+        opponentKart.posY = 550;
     }
 }

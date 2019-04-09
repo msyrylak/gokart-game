@@ -3,17 +3,22 @@ package Part3;
 import java.net.*;
 import java.util.Date;
 import java.util.Scanner;
+
+import javax.swing.JPanel;
+
 import java.io.*;
 
-public class Client {
+public class Client extends JPanel {
 
+    private static final long serialVersionUID = -5695794244004318392L;
     Date date;
     // Declare client socket
     Socket clientSocket = null;
     short id;
+    String goKartColour;
     // Declare output stream and string to send to server
-    DataOutputStream output = null;
     DataInputStream input = null;
+    DataOutputStream output = null;
     Scanner scanner;
 
     public Client() {
@@ -25,9 +30,8 @@ public class Client {
 
         try {
             clientSocket = new Socket("localhost", 5000);
-            input = new DataInputStream(clientSocket.getInputStream());
             output = new DataOutputStream(clientSocket.getOutputStream());
-            scanner = new Scanner(clientSocket.getInputStream());
+            input = new DataInputStream(clientSocket.getInputStream());
         } catch (UnknownHostException e) {
             System.err.println("Don't know about host: hostname");
         } catch (IOException e) {
@@ -36,10 +40,31 @@ public class Client {
         try {
             output.writeShort(id);
             output.flush();
+            goKartColour = input.readUTF();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void sendFloat(float v) {
+        try {
+            output.writeFloat(v);
+            output.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public float receiveFloat() {
+        float k = 0;
+        try {
+            k = input.readFloat();
+            System.out.println(k);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return k;
     }
 
     public void sendInt(int v) {
@@ -51,7 +76,7 @@ public class Client {
         }
     }
 
-    public int readInt() {
+    public int receiveInt() {
         int k = 0;
         try {
             k = input.readInt();
@@ -61,4 +86,46 @@ public class Client {
         }
         return k;
     }
+
+    public void sendColour(String v) {
+        try {
+            output.writeUTF(v);
+            output.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String receiveColour() {
+        String v = "";
+        try {
+            v = input.readUTF();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return v;
+    }
+
+    // public void sendGoKart(GoKart kart) {
+
+    //     try {
+    //         output.writeObject(kart);
+    //         output.flush();
+    //     } catch (IOException e) {
+    //         e.printStackTrace();
+    //     }
+    // }
+
+    // public GoKart readGoKart() {
+    //     GoKart k = null;
+    //     try {
+    //         k = (GoKart) input.readObject();
+    //     } catch (ClassNotFoundException e) {
+    //         e.printStackTrace();
+    //     } catch (IOException e) {
+    //         e.printStackTrace();
+    //     }
+    //     return k;
+    // }
+
 }

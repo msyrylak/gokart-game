@@ -1,9 +1,12 @@
 package Part3;
 
 import java.awt.Rectangle;
+import java.io.Serializable;
 import javax.swing.*;
 
-public class GoKart {
+public class GoKart implements Serializable {
+    
+    private static final long serialVersionUID = 4113208723989468613L;
     String colour;
     float posX;
     float posY;
@@ -64,7 +67,9 @@ public class GoKart {
         this.aabb = new Rectangle((int) this.posX, (int) this.posY, width, height);
     }
 
-    private class Vector2 {
+    private class Vector2 implements Serializable {
+        
+        private static final long serialVersionUID = 5839433380504314418L;
         public float x;
         public float y;
 
