@@ -30,7 +30,7 @@ public class Client extends JPanel {
         id = (short) ((60 * minutes) + seconds);
 
         try {
-            clientSocket = new Socket("localhost", 5000);
+            clientSocket = new Socket(InetAddress.getByName("localhost"), 5000);
             output = new DataOutputStream(clientSocket.getOutputStream());
             input = new DataInputStream(clientSocket.getInputStream());
         } catch (UnknownHostException e) {
@@ -44,67 +44,9 @@ public class Client extends JPanel {
             goKartColour = input.readUTF();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            System.out.println("Here");
         }
-    }
-
-    public void sendFloat(float v) {
-        try {
-            output.writeFloat(v);
-            output.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public float receiveFloat() {
-        float k = 0;
-        try {
-            k = input.readFloat();
-            System.out.println(k);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return k;
-    }
-
-    public void sendInt(int v) {
-        try {
-            output.writeInt(v);
-            output.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public int receiveInt() {
-        int k = 0;
-        try {
-            k = input.readInt();
-            System.out.println(k);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return k;
-    }
-
-    public void sendColour(String v) {
-        try {
-            output.writeUTF(v);
-            output.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public String receiveColour() {
-        String v = "";
-        try {
-            v = input.readUTF();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return v;
     }
 
     public void sendBytes( float posX, float posY, int index) {
@@ -125,10 +67,9 @@ public class Client extends JPanel {
             output.write(kartData);
             output.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            System.out.println("Lost connection!");
         }
-
-
     }
 
     public byte[] receiveBytes()
@@ -137,33 +78,10 @@ public class Client extends JPanel {
         try {
             input.readFully(kartData);
         } catch (IOException e) {
-            e.printStackTrace();
+
+            System.out.println("Opponent disconnected");
         }
         return kartData;
     }
     
-    
-    
-    // public void sendGoKart(GoKart kart) {
-
-    //     try {
-    //         output.writeObject(kart);
-    //         output.flush();
-    //     } catch (IOException e) {
-    //         e.printStackTrace();
-    //     }
-    // }
-
-    // public GoKart readGoKart() {
-    //     GoKart k = null;
-    //     try {
-    //         k = (GoKart) input.readObject();
-    //     } catch (ClassNotFoundException e) {
-    //         e.printStackTrace();
-    //     } catch (IOException e) {
-    //         e.printStackTrace();
-    //     }
-    //     return k;
-    // }
-
 }

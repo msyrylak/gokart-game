@@ -13,9 +13,10 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
     private final int TOTAL_INDEX = 15;
     private final int startingIndex = 0;
     private final int REFRESH_RATE = 50;
+    //private JLabel playerColour = new JLabel();
     private Timer timer;
-    GoKart playerKart = null; // = new GoKart(FIRST_CAR, startingIndex, 425, 500);
-    GoKart opponentKart = null; // = new GoKart(SECOND_CAR, startingIndex, 425, 550);
+    GoKart playerKart = null; 
+    GoKart opponentKart = null;
     Client client;
     // aabb for environment
     Rectangle grass;
@@ -38,7 +39,6 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
             playerKart = new GoKart(SECOND_CAR, startingIndex, 425, 550);
             opponentKart = new GoKart(FIRST_CAR, startingIndex, 425, 500);
         }
-
     }
 
     public void paintComponent(Graphics g) {
@@ -64,6 +64,9 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
         //whiteKart.AddCollisionBox(50, 50);
         //blackKart.AddCollisionBox(50, 50);
 
+        playerKart.getCurrentImage().paintIcon(this, g, (int) playerKart.posX, (int) playerKart.posY);
+        opponentKart.getCurrentImage().paintIcon(this, g, (int) opponentKart.posX, (int) opponentKart.posY);
+
         client.sendBytes(playerKart.posX, playerKart.posY, playerKart.index);
 
         byte[] data = client.receiveBytes();
@@ -75,9 +78,6 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
         opponentKart.posY = ByteBuffer.wrap(position2).getFloat();
         opponentKart.index = ByteBuffer.wrap(position3).getInt();
 
-
-        playerKart.getCurrentImage().paintIcon(this, g, (int) playerKart.posX, (int) playerKart.posY);
-        opponentKart.getCurrentImage().paintIcon(this, g, (int) opponentKart.posX, (int) opponentKart.posY);
 
     }
 

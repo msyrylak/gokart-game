@@ -12,10 +12,11 @@ public class Server {
     ServerSocket server;
     // array of players
     Player[] players;
-    String[] playerColours = {"white", "black"};
+    String[] playerColours = { "white", "black" };
     ExecutorService serviceGame;
     final static int NUMBER_OF_PLAYERS = 2;
     final static int PORT = 5000;
+
     public Server() {
 
         // create array of players
@@ -88,21 +89,33 @@ public class Server {
 
             while (shouldRun) {
                 try {
-                //String opponentColour = input.readUTF(); 
-                byte[]  v = new byte[12];
-                input.readFully(v);
-                // float v2 = input.readFloat();
-                // int index = input.readInt();
 
-                //sendStringData(opponentColour);
-                sendObjectData(v);
-                // sendObjectData(v2);
-                // sendIntData(index);
+                    byte[] v = new byte[12];
+                    input.readFully(v);
+
+                    sendObjectData(v);
+
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    // e.printStackTrace();
+                    System.out.println("Client " + id + " disconnected!");
+                    for (int i = 0; i < NUMBER_OF_PLAYERS; i++) {
+                        if (this.equals(players[i])) {
+
+                            try {
+                                players[i].input.close();
+                                players[i].output.close();
+                            } catch (IOException e1) {
+                                e1.printStackTrace();
+                            }
+
+                        }
+                    }
+                    break;
+
                 } 
             }
         }
+
 
         public void sendObjectData(byte[] v) {
             for (int i = 0; i < NUMBER_OF_PLAYERS; i++) {
@@ -117,33 +130,7 @@ public class Server {
 
         }
 
-        public void sendIntData(int v) {
-            for (int i = 0; i < NUMBER_OF_PLAYERS; i++) {
-                if (!this.equals(players[i])) {
-                    try {
-                        players[i].output.writeInt(v);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-        }
-
-        public void sendStringData(String v) {
-            for (int i = 0; i < NUMBER_OF_PLAYERS; i++) {
-                if (!this.equals(players[i])) {
-                    try {
-                        players[i].output.writeUTF(v);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-        }
-
-
+        
         public void setRunStatus(boolean status)
         {
             this.shouldRun = status;
