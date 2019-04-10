@@ -88,26 +88,27 @@ public class Server {
 
             while (shouldRun) {
                 try {
-                String opponentColour = input.readUTF(); 
-                float  v = input.readFloat();
-                float v2 = input.readFloat();
-                int index = input.readInt();
+                //String opponentColour = input.readUTF(); 
+                byte[]  v = new byte[12];
+                input.readFully(v);
+                // float v2 = input.readFloat();
+                // int index = input.readInt();
 
-                sendStringData(opponentColour);
+                //sendStringData(opponentColour);
                 sendObjectData(v);
-                sendObjectData(v2);
-                sendIntData(index);
+                // sendObjectData(v2);
+                // sendIntData(index);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } 
             }
         }
 
-        public void sendObjectData(float v) {
+        public void sendObjectData(byte[] v) {
             for (int i = 0; i < NUMBER_OF_PLAYERS; i++) {
                 if (!this.equals(players[i])) {
                     try {
-                        players[i].output.writeFloat(v);
+                        players[i].output.write(v);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

@@ -1,6 +1,7 @@
 package Part3;
 
 import java.net.*;
+import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -106,6 +107,43 @@ public class Client extends JPanel {
         return v;
     }
 
+    public void sendBytes( float posX, float posY, int index) {
+        //byte[] kartColour = colour.getBytes();
+        byte[] positionX = ByteBuffer.allocate(4).putFloat(posX).array();
+        byte[] positionY = ByteBuffer.allocate(4).putFloat(posY).array();
+        byte[] kartIndex = ByteBuffer.allocate(4).putInt(index).array();
+
+        ByteArrayOutputStream myStream = new ByteArrayOutputStream();
+        try {
+            //myStream.write(kartColour);
+            myStream.write(positionX);
+            myStream.write(positionY);
+            myStream.write(kartIndex);
+            byte[] kartData = myStream.toByteArray();
+            //myStream.flush();
+            
+            output.write(kartData);
+            output.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public byte[] receiveBytes()
+    {
+        byte[] kartData = new byte[12];
+        try {
+            input.readFully(kartData);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return kartData;
+    }
+    
+    
+    
     // public void sendGoKart(GoKart kart) {
 
     //     try {
