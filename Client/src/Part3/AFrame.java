@@ -1,5 +1,4 @@
 package Part3;
-
 import javax.swing.JFrame;
 
 public class AFrame extends JFrame

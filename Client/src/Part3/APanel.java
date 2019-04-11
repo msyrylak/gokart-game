@@ -13,14 +13,17 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
     private final int TOTAL_INDEX = 15;
     private final int startingIndex = 0;
     private final int REFRESH_RATE = 50;
-    //private JLabel playerColour = new JLabel();
+    // private JLabel playerColour = new JLabel();
     private Timer timer;
-    GoKart playerKart = null; 
+    GoKart playerKart = null;
     GoKart opponentKart = null;
     Client client;
     // aabb for environment
     Rectangle grass;
     Rectangle outerEdge;
+
+    // packet info
+    byte[] data;
 
     public APanel() {
 
@@ -31,7 +34,7 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
         timer = new Timer(REFRESH_RATE, this);
         timer.start();
         client = new Client();
-        
+        this.add(client);
         if (client.goKartColour.equals(FIRST_CAR)) {
             playerKart = new GoKart(FIRST_CAR, startingIndex, 425, 500);
             opponentKart = new GoKart(SECOND_CAR, startingIndex, 425, 550);
@@ -61,23 +64,36 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
 
         grass = new Rectangle(150, 200, 550, 300);
         outerEdge = new Rectangle(50, 100, 750, 500);
-        //whiteKart.AddCollisionBox(50, 50);
-        //blackKart.AddCollisionBox(50, 50);
+        // whiteKart.AddCollisionBox(50, 50);
+        // blackKart.AddCollisionBox(50, 50);
 
         playerKart.getCurrentImage().paintIcon(this, g, (int) playerKart.posX, (int) playerKart.posY);
         opponentKart.getCurrentImage().paintIcon(this, g, (int) opponentKart.posX, (int) opponentKart.posY);
 
         client.sendBytes(playerKart.posX, playerKart.posY, playerKart.index);
+      
+        if((data = client.receiveBytes()) != null)
+        {
+            byte[] position = Arrays.copyOfRange(data, 0, 4);
+            byte[] position2 = Arrays.copyOfRange(data, 4, 8);
+            byte[] position3 = Arrays.copyOfRange(data, 8, 12);
+    
+            opponentKart.posX = ByteBuffer.wrap(position).getFloat();
+            opponentKart.posY = ByteBuffer.wrap(position2).getFloat();
+            opponentKart.index = ByteBuffer.wrap(position3).getInt();    
+        }
+           
+        // client.sendBytes(playerKart.posX, playerKart.posY, playerKart.index);
 
-        byte[] data = client.receiveBytes();
-        byte [] position = Arrays.copyOfRange(data, 0, 4);
-        byte [] position2 = Arrays.copyOfRange(data, 4, 8);
-        byte [] position3 = Arrays.copyOfRange(data, 8, 12);
+      
+        // byte[] data = client.receiveBytes();
+        // byte[] position = Arrays.copyOfRange(data, 0, 4);
+        // byte[] position2 = Arrays.copyOfRange(data, 4, 8);
+        // byte[] position3 = Arrays.copyOfRange(data, 8, 12);
 
-        opponentKart.posX = ByteBuffer.wrap(position).getFloat();
-        opponentKart.posY = ByteBuffer.wrap(position2).getFloat();
-        opponentKart.index = ByteBuffer.wrap(position3).getInt();
-
+        // opponentKart.posX = ByteBuffer.wrap(position).getFloat();
+        // opponentKart.posY = ByteBuffer.wrap(position2).getFloat();
+        // opponentKart.index = ByteBuffer.wrap(position3).getInt();
 
     }
 
@@ -96,28 +112,6 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
         int key = e.getKeyCode();
 
         switch (key) {
-        // case KeyEvent.VK_D:
-        //     if (opponentKart.index == 0) {
-        //         opponentKart.index = TOTAL_INDEX;
-        //     } else if (opponentKart.index > 0) {
-        //         opponentKart.index--;
-        //     }
-        //     break;
-        // case KeyEvent.VK_A:
-        //     if (opponentKart.index >= TOTAL_INDEX) {
-        //         opponentKart.index = 0;
-        //     } else {
-        //         opponentKart.index++;
-        //     }
-        //     break;
-
-        // case KeyEvent.VK_W:
-        //     opponentKart.moveForward();
-        //     break;
-
-        // case KeyEvent.VK_S:
-        //     opponentKart.moveBackwards();
-        //     break;
 
         case KeyEvent.VK_RIGHT:
             if (playerKart.index == 0) {
@@ -179,7 +173,7 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
         // JOptionPane.DEFAULT_OPTION,
         // JOptionPane.PLAIN_MESSAGE, icon, options, options[0]);
         // if (x == 0) {
-        //     reset();
+        // reset();
         // } else {
         // System.exit(ABORT);
         // }
@@ -192,8 +186,7 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
 
     }
 
-    public void reset()
-    {
+    public void reset() {
         playerKart.setSpeed(0);
         opponentKart.setSpeed(0);
 

@@ -89,11 +89,9 @@ public class Server {
 
             while (shouldRun) {
                 try {
-
-                    byte[] v = new byte[12];
-                    input.readFully(v);
-
-                    sendObjectData(v);
+                    byte[] playerData = new byte[12];
+                    input.readFully(playerData);
+                    sendObjectData(playerData);
 
                 } catch (IOException e) {
                     // e.printStackTrace();
@@ -104,10 +102,10 @@ public class Server {
                             try {
                                 players[i].input.close();
                                 players[i].output.close();
+                                players[i].socket.close();
                             } catch (IOException e1) {
                                 e1.printStackTrace();
                             }
-
                         }
                     }
                     break;

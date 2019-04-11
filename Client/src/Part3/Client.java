@@ -3,15 +3,16 @@ package Part3;
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.util.Date;
-import java.util.Scanner;
 
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-
 import java.io.*;
 
 public class Client extends JPanel {
 
     private static final long serialVersionUID = -5695794244004318392L;
+    boolean shouldRun;
     Date date;
     // Declare client socket
     Socket clientSocket = null;
@@ -20,7 +21,11 @@ public class Client extends JPanel {
     // Declare output stream and string to send to server
     DataInputStream input = null;
     DataOutputStream output = null;
-    Scanner scanner;
+
+    // gui for the client side
+    JLabel playerColour = new JLabel();
+    JLabel generalInfo = new JLabel();
+    JLabel connectionStatus = new JLabel();
 
     public Client() {
 
@@ -44,44 +49,73 @@ public class Client extends JPanel {
             goKartColour = input.readUTF();
 
         } catch (IOException e) {
-            //e.printStackTrace();
+            // e.printStackTrace();
             System.out.println("Here");
         }
+
+        this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+
+        playerColour.setText("You are the " + goKartColour + " GoKart.");
+        connectionStatus.setText("Connected to the server.");
+
+        this.add(playerColour);
+        this.add(connectionStatus);
+        this.add(generalInfo);
     }
 
-    public void sendBytes( float posX, float posY, int index) {
-        //byte[] kartColour = colour.getBytes();
+    public void sendBytes(float posX, float posY, int index) {
+        // byte[] kartColour = colour.getBytes();
         byte[] positionX = ByteBuffer.allocate(4).putFloat(posX).array();
         byte[] positionY = ByteBuffer.allocate(4).putFloat(posY).array();
         byte[] kartIndex = ByteBuffer.allocate(4).putInt(index).array();
 
         ByteArrayOutputStream myStream = new ByteArrayOutputStream();
         try {
-            //myStream.write(kartColour);
+            // myStream.write(kartColour);
             myStream.write(positionX);
             myStream.write(positionY);
             myStream.write(kartIndex);
             byte[] kartData = myStream.toByteArray();
-            //myStream.flush();
-            
+            // myStream.flush();
+
             output.write(kartData);
             output.flush();
         } catch (IOException e) {
-            //e.printStackTrace();
-            System.out.println("Lost connection!");
+            // e.printStackTrace();
+            // System.out.println("Lost connection!");
+            connectionStatus.setText("Lost Connection!");
         }
     }
 
-    public byte[] receiveBytes()
-    {
-        byte[] kartData = new byte[12];
+    public byte[] receiveBytes() {
+        byte[] kartData = null;
         try {
-            input.readFully(kartData);
-        } catch (IOException e) {
-
-            System.out.println("Opponent disconnected");
+            int length = input.available();
+            //System.out.println(length);
+            generalInfo.setText("Waiting for opponent...");
+            if (length > 0) {
+                kartData = new byte[length];
+                try {
+                    input.readFully(kartData);
+                    generalInfo.setText("Opponent found!");
+                } catch (IOException e) {
+                    generalInfo.setText("Opponent disconnected");
+                }
+            }
+        } catch (IOException e1) {
+            e1.printStackTrace();
         }
         return kartData;
     }
-    
+
+    public boolean checkIfShouldRun() {
+        try {
+            shouldRun = input.readBoolean();
+        } catch (IOException e) {
+            // generalInfo.setText("Opponent disconnected");
+            System.out.println(e);
+        }
+        return shouldRun;
+    }
+
 }
