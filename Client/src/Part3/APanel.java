@@ -64,16 +64,17 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
 
         grass = new Rectangle(150, 200, 550, 300);
         outerEdge = new Rectangle(50, 100, 750, 500);
-        // whiteKart.AddCollisionBox(50, 50);
-        // blackKart.AddCollisionBox(50, 50);
+        playerKart.AddCollisionBox(50, 50);
+        opponentKart.AddCollisionBox(50, 50);
 
         playerKart.getCurrentImage().paintIcon(this, g, (int) playerKart.posX, (int) playerKart.posY);
         opponentKart.getCurrentImage().paintIcon(this, g, (int) opponentKart.posX, (int) opponentKart.posY);
 
         client.sendBytes(playerKart.posX, playerKart.posY, playerKart.index);
-      
+        
         if((data = client.receiveBytes()) != null)
         {
+            client.generalInfo.setText("Opponent found!");            
             byte[] position = Arrays.copyOfRange(data, 0, 4);
             byte[] position2 = Arrays.copyOfRange(data, 4, 8);
             byte[] position3 = Arrays.copyOfRange(data, 8, 12);
@@ -82,19 +83,6 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
             opponentKart.posY = ByteBuffer.wrap(position2).getFloat();
             opponentKart.index = ByteBuffer.wrap(position3).getInt();    
         }
-           
-        // client.sendBytes(playerKart.posX, playerKart.posY, playerKart.index);
-
-      
-        // byte[] data = client.receiveBytes();
-        // byte[] position = Arrays.copyOfRange(data, 0, 4);
-        // byte[] position2 = Arrays.copyOfRange(data, 4, 8);
-        // byte[] position3 = Arrays.copyOfRange(data, 8, 12);
-
-        // opponentKart.posX = ByteBuffer.wrap(position).getFloat();
-        // opponentKart.posY = ByteBuffer.wrap(position2).getFloat();
-        // opponentKart.index = ByteBuffer.wrap(position3).getInt();
-
     }
 
     @Override
@@ -139,45 +127,45 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
             break;
         }
 
-        // // simple collision detection
-        // if (!outerEdge.contains(playerKart.aabb))
-        // {
-        // playerKart.setSpeed(0);
-        // }
-        // else if (playerKart.aabb.intersects(grass)) /*||
-        // whiteKart.aabb.intersects(outerEdge.)*/ {
+        // simple collision detection
+        if (!outerEdge.contains(playerKart.aabb))
+        {
+        playerKart.setSpeed(0);
+        }
+        else if (playerKart.aabb.intersects(grass)) /*||
+        whiteKart.aabb.intersects(outerEdge.)*/ {
 
-        // playerKart.setSpeed(0);
+        playerKart.setSpeed(0);
 
-        // }
-        // if (!outerEdge.contains(opponentKart.aabb))
-        // {
-        // opponentKart.setSpeed(0);
-        // }
-        // else if (opponentKart.aabb.intersects(grass)) {
+        }
+        if (!outerEdge.contains(opponentKart.aabb))
+        {
+        opponentKart.setSpeed(0);
+        }
+        else if (opponentKart.aabb.intersects(grass)) {
 
-        // opponentKart.setSpeed(0);
+        opponentKart.setSpeed(0);
 
-        // }
-        // else if (opponentKart.aabb.intersects(playerKart.aabb) ||
-        // playerKart.aabb.intersects(opponentKart.aabb)) {
+        }
+        else if (opponentKart.aabb.intersects(playerKart.aabb) ||
+        playerKart.aabb.intersects(opponentKart.aabb)) {
 
-        // // Warning icon made by Twitter from Flaticon <www.flaticon.com>
-        // ImageIcon icon = new
-        // ImageIcon(this.getClass().getResource("Pics/warning.png"));
+        // Warning icon made by Twitter from Flaticon <www.flaticon.com>
+        ImageIcon icon = new
+        ImageIcon(this.getClass().getResource("Pics/warning.png"));
 
-        // // start the game again or close the program
-        // String[] options = { "Start again", "Close the program" };
+        // start the game again or close the program
+        String[] options = { "Start again", "Close the program" };
 
-        // int x = JOptionPane.showOptionDialog(this, "GoKarts crashed!", "Gameover",
-        // JOptionPane.DEFAULT_OPTION,
-        // JOptionPane.PLAIN_MESSAGE, icon, options, options[0]);
-        // if (x == 0) {
-        // reset();
-        // } else {
-        // System.exit(ABORT);
-        // }
-        // }
+        int x = JOptionPane.showOptionDialog(this, "GoKarts crashed!", "Gameover",
+        JOptionPane.DEFAULT_OPTION,
+        JOptionPane.PLAIN_MESSAGE, icon, options, options[0]);
+        if (x == 0) {
+        reset();
+        } else {
+        System.exit(ABORT);
+        }
+        }
 
     }
 
@@ -190,13 +178,23 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
         playerKart.setSpeed(0);
         opponentKart.setSpeed(0);
 
-        playerKart.index = startingIndex;
-        opponentKart.index = startingIndex;
+        if (client.goKartColour.equals(FIRST_CAR)) {
+            playerKart.index = startingIndex;
+            playerKart.posX = 425;
+            playerKart.posY = 500;
 
-        playerKart.posX = 425;
-        playerKart.posY = 500;
+            opponentKart.index = startingIndex;
+            opponentKart.posX = 425;
+            opponentKart.posY = 550;
+        } else {
+            playerKart.index = startingIndex;
+            playerKart.posX = 425;
+            playerKart.posY = 550;
 
-        opponentKart.posX = 425;
-        opponentKart.posY = 550;
+            opponentKart.index = startingIndex;
+            opponentKart.posX = 425;
+            opponentKart.posY = 500;
+        }
+
     }
 }

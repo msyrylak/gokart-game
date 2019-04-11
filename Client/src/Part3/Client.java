@@ -91,13 +91,10 @@ public class Client extends JPanel {
         byte[] kartData = null;
         try {
             int length = input.available();
-            //System.out.println(length);
-            generalInfo.setText("Waiting for opponent...");
             if (length > 0) {
                 kartData = new byte[length];
                 try {
                     input.readFully(kartData);
-                    generalInfo.setText("Opponent found!");
                 } catch (IOException e) {
                     generalInfo.setText("Opponent disconnected");
                 }

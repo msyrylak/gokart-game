@@ -103,6 +103,7 @@ public class Server {
                                 players[i].input.close();
                                 players[i].output.close();
                                 players[i].socket.close();
+                                
                             } catch (IOException e1) {
                                 e1.printStackTrace();
                             }
@@ -110,10 +111,9 @@ public class Server {
                     }
                     break;
 
-                } 
+                }
             }
         }
-
 
         public void sendObjectData(byte[] v) {
             for (int i = 0; i < NUMBER_OF_PLAYERS; i++) {
@@ -121,7 +121,9 @@ public class Server {
                     try {
                         players[i].output.write(v);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        // e.printStackTrace();
+                        System.out.println("Can't send anything!");
+                        //shouldRun = false;
                     }
                 }
             }
