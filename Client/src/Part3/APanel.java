@@ -35,6 +35,13 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
         timer.start();
         client = new Client();
         this.add(client);
+        while (!client.ready) {
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }                
+        }
         if (client.goKartColour.equals(FIRST_CAR)) {
             playerKart = new GoKart(FIRST_CAR, startingIndex, 425, 500);
             opponentKart = new GoKart(SECOND_CAR, startingIndex, 425, 550);
@@ -42,6 +49,7 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
             playerKart = new GoKart(SECOND_CAR, startingIndex, 425, 550);
             opponentKart = new GoKart(FIRST_CAR, startingIndex, 425, 500);
         }
+
     }
 
     public void paintComponent(Graphics g) {

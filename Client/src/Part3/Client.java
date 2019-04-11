@@ -12,7 +12,7 @@ import java.io.*;
 public class Client extends JPanel {
 
     private static final long serialVersionUID = -5695794244004318392L;
-    boolean shouldRun;
+    boolean ready = false;
     Date date;
     // Declare client socket
     Socket clientSocket = null;
@@ -35,7 +35,7 @@ public class Client extends JPanel {
         id = (short) ((60 * minutes) + seconds);
 
         try {
-            clientSocket = new Socket(InetAddress.getByName("localhost"), 5000);
+            clientSocket = new Socket(InetAddress.getByName("192.168.0.9"), 5000);
             output = new DataOutputStream(clientSocket.getOutputStream());
             input = new DataInputStream(clientSocket.getInputStream());
         } catch (UnknownHostException e) {
@@ -47,7 +47,7 @@ public class Client extends JPanel {
             output.writeShort(id);
             output.flush();
             goKartColour = input.readUTF();
-
+            ready = true;
         } catch (IOException e) {
             // e.printStackTrace();
             System.out.println("Here");
@@ -107,12 +107,12 @@ public class Client extends JPanel {
 
     public boolean checkIfShouldRun() {
         try {
-            shouldRun = input.readBoolean();
+            ready = input.readBoolean();
         } catch (IOException e) {
             // generalInfo.setText("Opponent disconnected");
             System.out.println(e);
         }
-        return shouldRun;
+        return ready;
     }
 
 }

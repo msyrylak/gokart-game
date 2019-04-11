@@ -76,6 +76,7 @@ public class Server {
                 id = input.readShort();
                 System.out.println("Player " + id + " connected");
                 output.writeUTF(colour);
+                output.flush();
                 while (shouldRun == false) {
                     try {
                         Thread.sleep(1);
