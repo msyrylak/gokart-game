@@ -65,26 +65,24 @@ public class Client extends JPanel {
         this.add(generalInfo);
     }
 
-    public void sendBytes(float posX, float posY, int index) {
-        // byte[] kartColour = colour.getBytes();
+    public void sendBytes(float posX, float posY, int index, byte crash) {
         byte[] positionX = ByteBuffer.allocate(4).putFloat(posX).array();
         byte[] positionY = ByteBuffer.allocate(4).putFloat(posY).array();
         byte[] kartIndex = ByteBuffer.allocate(4).putInt(index).array();
+        byte[] crashStatus = ByteBuffer.allocate(1).put(crash).array();
 
         ByteArrayOutputStream myStream = new ByteArrayOutputStream();
         try {
-            // myStream.write(kartColour);
             myStream.write(positionX);
             myStream.write(positionY);
             myStream.write(kartIndex);
+            myStream.write(crashStatus);
             byte[] kartData = myStream.toByteArray();
-            // myStream.flush();
 
             output.write(kartData);
             output.flush();
         } catch (IOException e) {
             // e.printStackTrace();
-            // System.out.println("Lost connection!");
             connectionStatus.setText("Lost Connection!");
         }
     }
@@ -106,15 +104,4 @@ public class Client extends JPanel {
         }
         return kartData;
     }
-
-    public boolean checkIfShouldRun() {
-        try {
-            ready = input.readBoolean();
-        } catch (IOException e) {
-            // generalInfo.setText("Opponent disconnected");
-            System.out.println(e);
-        }
-        return ready;
-    }
-
 }

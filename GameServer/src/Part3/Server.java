@@ -3,7 +3,6 @@ package Part3;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -77,7 +76,7 @@ public class Server {
                 System.out.println("Player " + id + " connected");
                 output.writeUTF(colour);
                 output.flush();
-                while (shouldRun == false) {
+                 while (shouldRun == false) {
                     try {
                         Thread.sleep(1);
                     } catch (InterruptedException e) {
@@ -90,7 +89,7 @@ public class Server {
 
             while (shouldRun) {
                 try {
-                    byte[] playerData = new byte[12];
+                    byte[] playerData = new byte[13];
                     input.readFully(playerData);
                     sendObjectData(playerData);
 
@@ -111,7 +110,6 @@ public class Server {
                         }
                     }
                     break;
-
                 }
             }
         }
@@ -128,7 +126,6 @@ public class Server {
                     }
                 }
             }
-
         }
 
         
