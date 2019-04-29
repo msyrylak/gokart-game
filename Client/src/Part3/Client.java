@@ -35,7 +35,7 @@ public class Client extends JPanel {
         id = (short) ((60 * minutes) + seconds);
 
         try {
-            clientSocket = new Socket(InetAddress.getByName("192.168.0.9"), 5000);
+            clientSocket = new Socket(InetAddress.getByName("localhost"), 5000);
             output = new DataOutputStream(clientSocket.getOutputStream());
             input = new DataInputStream(clientSocket.getInputStream());
         } catch (UnknownHostException e) {
@@ -46,7 +46,9 @@ public class Client extends JPanel {
         try {
             output.writeShort(id);
             output.flush();
+            System.out.println("Waiting for colour " + date.getHours() + date.getMinutes());
             goKartColour = input.readUTF();
+            System.out.println("Received colour " + date.getHours() + date.getMinutes());
             ready = true;
         } catch (IOException e) {
             // e.printStackTrace();

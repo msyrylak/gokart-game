@@ -35,6 +35,7 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
         timer.start();
         client = new Client();
         this.add(client);
+        System.out.println("Before while");
         while (!client.ready) {
             try {
                 Thread.sleep(1);
@@ -42,6 +43,7 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
                 e.printStackTrace();
             }                
         }
+        System.out.println("After");
         if (client.goKartColour.equals(FIRST_CAR)) {
             playerKart = new GoKart(FIRST_CAR, startingIndex, 425, 500);
             opponentKart = new GoKart(SECOND_CAR, startingIndex, 425, 550);
@@ -91,6 +93,10 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
             opponentKart.posY = ByteBuffer.wrap(position2).getFloat();
             opponentKart.index = ByteBuffer.wrap(position3).getInt();    
         }
+        else
+        {
+            client.generalInfo.setText("No Opponent!");            
+        }        
     }
 
     @Override
@@ -135,45 +141,45 @@ public class APanel extends JPanel implements KeyListener, ActionListener {
             break;
         }
 
-        // simple collision detection
-        if (!outerEdge.contains(playerKart.aabb))
-        {
-        playerKart.setSpeed(0);
-        }
-        else if (playerKart.aabb.intersects(grass)) /*||
-        whiteKart.aabb.intersects(outerEdge.)*/ {
+        // // simple collision detection
+        // if (!outerEdge.contains(playerKart.aabb))
+        // {
+        // playerKart.setSpeed(0);
+        // }
+        // else if (playerKart.aabb.intersects(grass)) /*||
+        // whiteKart.aabb.intersects(outerEdge.)*/ {
 
-        playerKart.setSpeed(0);
+        // playerKart.setSpeed(0);
 
-        }
-        if (!outerEdge.contains(opponentKart.aabb))
-        {
-        opponentKart.setSpeed(0);
-        }
-        else if (opponentKart.aabb.intersects(grass)) {
+        // }
+        // if (!outerEdge.contains(opponentKart.aabb))
+        // {
+        // opponentKart.setSpeed(0);
+        // }
+        // else if (opponentKart.aabb.intersects(grass)) {
 
-        opponentKart.setSpeed(0);
+        // opponentKart.setSpeed(0);
 
-        }
-        else if (opponentKart.aabb.intersects(playerKart.aabb) ||
-        playerKart.aabb.intersects(opponentKart.aabb)) {
+        // }
+        // else if (opponentKart.aabb.intersects(playerKart.aabb) ||
+        // playerKart.aabb.intersects(opponentKart.aabb)) {
 
-        // Warning icon made by Twitter from Flaticon <www.flaticon.com>
-        ImageIcon icon = new
-        ImageIcon(this.getClass().getResource("Pics/warning.png"));
+        // // Warning icon made by Twitter from Flaticon <www.flaticon.com>
+        // ImageIcon icon = new
+        // ImageIcon(this.getClass().getResource("Pics/warning.png"));
 
-        // start the game again or close the program
-        String[] options = { "Start again", "Close the program" };
+        // // start the game again or close the program
+        // String[] options = { "Start again", "Close the program" };
 
-        int x = JOptionPane.showOptionDialog(this, "GoKarts crashed!", "Gameover",
-        JOptionPane.DEFAULT_OPTION,
-        JOptionPane.PLAIN_MESSAGE, icon, options, options[0]);
-        if (x == 0) {
-        reset();
-        } else {
-        System.exit(ABORT);
-        }
-        }
+        // int x = JOptionPane.showOptionDialog(this, "GoKarts crashed!", "Gameover",
+        // JOptionPane.DEFAULT_OPTION,
+        // JOptionPane.PLAIN_MESSAGE, icon, options, options[0]);
+        // if (x == 0) {
+        // reset();
+        // } else {
+        // System.exit(ABORT);
+        // }
+        // }
 
     }
 
